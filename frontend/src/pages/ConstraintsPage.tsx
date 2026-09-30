@@ -23,7 +23,7 @@ export const ConstraintsPage: React.FC = () => {
     }
   };
 
-  if (loading || !rules) return <div className="p-8 text-center text-slate-400">Loading Constraint Rules...</div>;
+  if (loading || !rules) return <div className="p-8 text-center text-slate-500 font-medium">Loading Constraint Rules...</div>;
 
   const weightsList: { key: keyof ConstraintRules; label: string; desc: string }[] = [
     { key: 'faculty_gaps_weight', label: 'Faculty Gaps Penalty', desc: 'Penalizes empty periods between classes for a faculty member.' },
@@ -37,38 +37,38 @@ export const ConstraintsPage: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+            <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200">
               <Sliders className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-bold text-slate-100 text-lg">CP-SAT Soft Constraint Weights Configuration</h2>
-              <p className="text-xs text-slate-400">Tune objective penalty weights used by the CP-SAT optimization model.</p>
+              <h2 className="font-bold text-slate-900 text-lg">CP-SAT Soft Constraint Weights Configuration</h2>
+              <p className="text-xs text-slate-500 font-medium">Tune objective penalty weights used by the CP-SAT optimization model.</p>
             </div>
           </div>
 
           <button
             onClick={handleSave}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-xl shadow-lg shadow-indigo-600/30 flex items-center gap-1.5"
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-md flex items-center gap-1.5"
           >
             <Save className="w-4 h-4" /> Save Weights
           </button>
         </div>
 
         {saved && (
-          <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-emerald-400 text-xs font-semibold flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4" /> Soft constraint weights updated successfully.
+          <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-xs font-bold flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Soft constraint weights updated successfully.
           </div>
         )}
 
-        <div className="space-y-4 pt-4 border-t border-slate-800">
+        <div className="space-y-4 pt-4 border-t border-slate-100">
           {weightsList.map(w => (
-            <div key={w.key} className="p-4 bg-slate-950 rounded-xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div key={w.key} className="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <h4 className="font-bold text-slate-200 text-sm">{w.label}</h4>
-                <p className="text-xs text-slate-400 mt-0.5">{w.desc}</p>
+                <h4 className="font-bold text-slate-800 text-sm">{w.label}</h4>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">{w.desc}</p>
               </div>
 
               <div className="flex items-center gap-3 shrink-0">
@@ -78,9 +78,9 @@ export const ConstraintsPage: React.FC = () => {
                   max="50"
                   value={rules[w.key]}
                   onChange={(e) => setRules({ ...rules, [w.key]: Number(e.target.value) })}
-                  className="w-32 accent-indigo-500"
+                  className="w-32 accent-indigo-600"
                 />
-                <span className="w-10 text-center font-bold text-indigo-400 text-sm bg-slate-900 py-1 px-2 rounded border border-slate-800">
+                <span className="w-10 text-center font-black text-indigo-700 text-sm bg-white py-1 px-2 rounded-lg border border-slate-200 shadow-sm">
                   {rules[w.key]}
                 </span>
               </div>

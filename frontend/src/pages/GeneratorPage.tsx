@@ -28,43 +28,43 @@ export const GeneratorPage: React.FC<GeneratorPageProps> = ({ onNavigateToMatrix
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200">
             <Cpu className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-slate-100">Google OR-Tools CP-SAT Optimization Engine</h2>
-            <p className="text-xs text-slate-400">Generates optimal timetable satisfying hard & soft constraints across all departments.</p>
+            <h2 className="text-xl font-bold text-slate-900">Google OR-Tools CP-SAT Optimization Engine</h2>
+            <p className="text-xs text-slate-500 font-medium">Generates optimal timetable satisfying hard & soft constraints across all departments.</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-800">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-100">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1">Schedule Name</label>
+            <label className="block text-xs font-bold text-slate-700 mb-1">Schedule Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-sm text-slate-200"
+              className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs text-slate-800 font-semibold focus:outline-none focus:border-indigo-500"
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1">Academic Term</label>
+            <label className="block text-xs font-bold text-slate-700 mb-1">Academic Term</label>
             <input
               type="text"
               value={academicTerm}
               onChange={(e) => setAcademicTerm(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-sm text-slate-200"
+              className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs text-slate-800 font-semibold focus:outline-none focus:border-indigo-500"
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1">Solver Time Limit (seconds)</label>
+            <label className="block text-xs font-bold text-slate-700 mb-1">Solver Time Limit (seconds)</label>
             <input
               type="number"
               value={timeLimit}
               onChange={(e) => setTimeLimit(Number(e.target.value))}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-sm text-slate-200"
+              className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs text-slate-800 font-semibold focus:outline-none focus:border-indigo-500"
             />
           </div>
         </div>
@@ -73,7 +73,7 @@ export const GeneratorPage: React.FC<GeneratorPageProps> = ({ onNavigateToMatrix
           <button
             onClick={handleGenerate}
             disabled={isGenerating}
-            className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-indigo-500/25 flex items-center gap-2 disabled:opacity-50"
+            className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-2 disabled:opacity-50"
           >
             {isGenerating ? (
               <>
@@ -91,43 +91,43 @@ export const GeneratorPage: React.FC<GeneratorPageProps> = ({ onNavigateToMatrix
 
       {/* Result Display */}
       {result && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-            <h3 className="font-bold text-slate-200 flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-emerald-400" /> Optimization Execution Summary
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <h3 className="font-bold text-slate-800 text-sm flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600" /> Optimization Execution Summary
             </h3>
             <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${
               result.status === 'GENERATED' || result.solver_status === 'OPTIMAL' || result.solver_status === 'FEASIBLE'
-                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                : 'bg-rose-50 text-rose-700 border-rose-200'
             }`}>
               {result.solver_status || result.status}
             </span>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-            <div className="p-3 bg-slate-950 rounded-lg border border-slate-800">
-              <span className="text-slate-400">Total Scheduled Sessions</span>
-              <p className="text-lg font-bold text-slate-100 mt-1">{result.total_entries || 0}</p>
+            <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span className="text-slate-500 font-semibold">Total Scheduled Sessions</span>
+              <p className="text-xl font-black text-slate-900 mt-1">{result.total_entries || 0}</p>
             </div>
-            <div className="p-3 bg-slate-950 rounded-lg border border-slate-800">
-              <span className="text-slate-400">Objective Score</span>
-              <p className="text-lg font-bold text-indigo-400 mt-1">{result.objective_score ?? 'N/A'}</p>
+            <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span className="text-slate-500 font-semibold">Objective Score</span>
+              <p className="text-xl font-black text-indigo-600 mt-1">{result.objective_score ?? 'N/A'}</p>
             </div>
-            <div className="p-3 bg-slate-950 rounded-lg border border-slate-800">
-              <span className="text-slate-400">Solver Wall Time</span>
-              <p className="text-lg font-bold text-emerald-400 mt-1">{result.solver_time_seconds || 0}s</p>
+            <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span className="text-slate-500 font-semibold">Solver Wall Time</span>
+              <p className="text-xl font-black text-emerald-600 mt-1">{result.solver_time_seconds || 0}s</p>
             </div>
-            <div className="p-3 bg-slate-950 rounded-lg border border-slate-800">
-              <span className="text-slate-400">Hard Violations</span>
-              <p className="text-lg font-bold text-emerald-400 mt-1">0</p>
+            <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span className="text-slate-500 font-semibold">Hard Violations</span>
+              <p className="text-xl font-black text-emerald-600 mt-1">0</p>
             </div>
           </div>
 
           <div className="flex justify-end pt-2">
             <button
               onClick={onNavigateToMatrix}
-              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl shadow-lg shadow-indigo-600/20"
+              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shadow-md"
             >
               Open Timetable Grid Matrix →
             </button>

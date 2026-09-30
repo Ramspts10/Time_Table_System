@@ -11,42 +11,42 @@ export const FacultyPage: React.FC = () => {
     api.getFaculty().then(res => setFaculty(res)).finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="p-8 text-center text-slate-400">Loading Faculty Roster...</div>;
+  if (loading) return <div className="p-8 text-center text-slate-500 font-medium">Loading Faculty Roster...</div>;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      <div className="flex items-center justify-between bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
+      <div className="flex items-center justify-between bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+          <div className="p-2.5 rounded-xl bg-blue-50 text-blue-700 border border-blue-200">
             <Users className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="font-bold text-slate-100 text-lg">Institutional Faculty Roster</h2>
-            <p className="text-xs text-slate-400">Manage faculty workload limits, availability slots, and preferences.</p>
+            <h2 className="font-bold text-slate-900 text-lg">Institutional Faculty Roster</h2>
+            <p className="text-xs text-slate-500 font-medium">Manage faculty workload limits, availability slots, and preferences.</p>
           </div>
         </div>
-        <span className="px-3 py-1 bg-slate-800 text-slate-300 rounded-lg text-xs font-semibold">Total: {faculty.length}</span>
+        <span className="px-3.5 py-1 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold border border-slate-200">Total: {faculty.length}</span>
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
+      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
         <table className="w-full text-xs text-left border-collapse">
           <thead>
-            <tr className="bg-slate-950/80 border-b border-slate-800 text-slate-400 uppercase font-semibold">
-              <th className="p-3">Faculty Name</th>
-              <th className="p-3">Email</th>
-              <th className="p-3">Max Daily Hours</th>
-              <th className="p-3">Max Weekly Hours</th>
-              <th className="p-3">Working Days</th>
+            <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 uppercase font-bold">
+              <th className="p-3.5">Faculty Name</th>
+              <th className="p-3.5">Email</th>
+              <th className="p-3.5">Max Daily Hours</th>
+              <th className="p-3.5">Max Weekly Hours</th>
+              <th className="p-3.5">Working Days</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60">
+          <tbody className="divide-y divide-slate-200">
             {faculty.map(f => (
-              <tr key={f.id} className="hover:bg-slate-800/40">
-                <td className="p-3 font-bold text-slate-200">{f.name}</td>
-                <td className="p-3 text-slate-400 flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-slate-500" /> {f.email}</td>
-                <td className="p-3 text-indigo-400 font-semibold">{f.max_hours_per_day} hrs/day</td>
-                <td className="p-3 text-purple-400 font-semibold">{f.max_hours_per_week} hrs/week</td>
-                <td className="p-3 text-slate-300">{f.available_days?.join(', ') || 'MON-FRI'}</td>
+              <tr key={f.id} className="hover:bg-slate-50/80">
+                <td className="p-3.5 font-bold text-slate-900">{f.name}</td>
+                <td className="p-3.5 text-slate-600 font-medium flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-slate-400" /> {f.email}</td>
+                <td className="p-3.5 text-indigo-700 font-bold">{f.max_hours_per_day} hrs/day</td>
+                <td className="p-3.5 text-purple-700 font-bold">{f.max_hours_per_week} hrs/week</td>
+                <td className="p-3.5 text-slate-700 font-semibold">{f.available_days?.join(', ') || 'MON-FRI'}</td>
               </tr>
             ))}
           </tbody>

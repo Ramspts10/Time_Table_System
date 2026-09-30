@@ -25,7 +25,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
         token: res.access_token
       });
     } catch (err: any) {
-      setError('Invalid credentials. Run seed data if database is empty.');
+      setError('Invalid credentials. Ensure backend is running.');
     } finally {
       setLoading(false);
     }
@@ -37,72 +37,72 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Dynamic background glow */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Soft background glow */}
+      <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-100/60 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-100/60 rounded-full blur-3xl pointer-events-none"></div>
 
-      <div className="max-w-md w-full bg-slate-900/80 border border-slate-800 rounded-3xl p-8 shadow-2xl backdrop-blur-xl relative z-10 space-y-6">
+      <div className="max-w-md w-full bg-white border border-slate-200 rounded-3xl p-8 shadow-xl relative z-10 space-y-6">
         <div className="text-center space-y-2">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-500 flex items-center justify-center text-white font-black text-xl shadow-xl shadow-indigo-500/30">
+          <div className="w-14 h-14 mx-auto rounded-2xl bg-indigo-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-indigo-200">
             ST
           </div>
-          <h1 className="text-2xl font-black text-slate-100 tracking-tight">Smart Timetable System</h1>
-          <p className="text-xs text-slate-400">Classroom Allocation & CP-SAT Optimization Platform</p>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Smart Timetable System</h1>
+          <p className="text-xs font-semibold text-slate-500">Classroom Allocation & CP-SAT Optimization Platform</p>
         </div>
 
         {error && (
-          <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-300 text-xs text-center font-medium">
+          <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-xs text-center font-bold">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div>
-            <label className="block text-slate-300 font-semibold mb-1">Email Address</label>
+            <label className="block text-slate-700 font-bold mb-1">Email Address</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:outline-none focus:border-indigo-500"
+              className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-900 font-semibold focus:outline-none focus:border-indigo-500"
             />
           </div>
 
           <div>
-            <label className="block text-slate-300 font-semibold mb-1">Password</label>
+            <label className="block text-slate-700 font-bold mb-1">Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:outline-none focus:border-indigo-500"
+              className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-900 font-semibold focus:outline-none focus:border-indigo-500"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2"
+            className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
           >
             {loading ? 'Authenticating...' : <>Sign In to Portal <ArrowRight className="w-4 h-4" /></>}
           </button>
         </form>
 
         {/* Quick Demo Logins */}
-        <div className="pt-4 border-t border-slate-800/80 space-y-2">
-          <p className="text-[11px] font-semibold text-slate-400 text-center uppercase tracking-wider">Quick Demo Login Shortcuts</p>
+        <div className="pt-4 border-t border-slate-100 space-y-2">
+          <p className="text-[11px] font-bold text-slate-400 text-center uppercase tracking-wider">Quick Demo Login Shortcuts</p>
           <div className="grid grid-cols-2 gap-2 text-[11px]">
-            <button onClick={() => handleQuickLogin('admin@apex.edu')} className="p-2 bg-slate-950 hover:bg-slate-800 rounded-lg text-slate-300 border border-slate-800 font-medium">
+            <button onClick={() => handleQuickLogin('admin@apex.edu')} className="p-2 bg-slate-50 hover:bg-slate-100 rounded-xl text-slate-700 border border-slate-200 font-bold">
               Admin
             </button>
-            <button onClick={() => handleQuickLogin('hod.cse@apex.edu')} className="p-2 bg-slate-950 hover:bg-slate-800 rounded-lg text-slate-300 border border-slate-800 font-medium">
+            <button onClick={() => handleQuickLogin('hod.cse@apex.edu')} className="p-2 bg-slate-50 hover:bg-slate-100 rounded-xl text-slate-700 border border-slate-200 font-bold">
               HOD CSE
             </button>
-            <button onClick={() => handleQuickLogin('alan.turing@apex.edu')} className="p-2 bg-slate-950 hover:bg-slate-800 rounded-lg text-slate-300 border border-slate-800 font-medium">
+            <button onClick={() => handleQuickLogin('alan.turing@apex.edu')} className="p-2 bg-slate-50 hover:bg-slate-100 rounded-xl text-slate-700 border border-slate-200 font-bold">
               Faculty
             </button>
-            <button onClick={() => handleQuickLogin('student.cse@apex.edu')} className="p-2 bg-slate-950 hover:bg-slate-800 rounded-lg text-slate-300 border border-slate-800 font-medium">
+            <button onClick={() => handleQuickLogin('student.cse@apex.edu')} className="p-2 bg-slate-50 hover:bg-slate-100 rounded-xl text-slate-700 border border-slate-200 font-bold">
               Student
             </button>
           </div>
