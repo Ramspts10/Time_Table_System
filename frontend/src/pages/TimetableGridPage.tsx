@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Calendar, Layers, Users, Building2, Download, CheckCircle2, AlertTriangle,
-  Lock, Unlock, RefreshCw, Filter, ArrowRightLeft, ShieldAlert
+  Lock, Unlock, RefreshCw, Filter, ArrowRightLeft, ShieldAlert, Sparkles, Wrench
 } from 'lucide-react';
 import { api } from '../services/api';
 import { Timetable, TimetableEntry, Room } from '../types';
@@ -19,6 +19,7 @@ export const TimetableGridPage: React.FC = () => {
   const [editPeriod, setEditPeriod] = useState(0);
   const [editRoomId, setEditRoomId] = useState('');
   const [editError, setEditError] = useState<any>(null);
+  const [rippleProposal, setRippleProposal] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   const days = ['MON', 'TUE', 'WED', 'THU', 'FRI'];
@@ -99,7 +100,18 @@ export const TimetableGridPage: React.FC = () => {
     setEditPeriod(entry.period_index);
     setEditRoomId(entry.room_id);
     setEditError(null);
+    setRippleProposal(null);
     setEditModalOpen(true);
+  };
+
+  const checkSlotValidity = async (day: number, period: number, roomId: string) => {
+    if (!selectedTimetable || !selectedEntry) return;
+    try {
+      const prop = await api.proposeOverride(selectedTimetable.id, selectedEntry.id, day, period, roomId);
+      setRippleProposal(prop);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleApplyManualEdit = async () => {
@@ -112,9 +124,26 @@ export const TimetableGridPage: React.FC = () => {
         setSelectedTimetable(updated);
       } else {
         setEditError(res);
+        checkSlotValidity(editDay, editPeriod, editRoomId);
       }
     } catch (err: any) {
       setEditError({ message: err.message || 'Edit failed' });
+    }
+  };
+
+  const handleApplyRippleShift = async () => {
+    if (!selectedTimetable || !selectedEntry) return;
+    try {
+      const res = await api.applyOverride(selectedTimetable.id, selectedEntry.id, editDay, editPeriod, editRoomId);
+      if (res.success) {
+        setEditModalOpen(false);
+        const updated = await api.getTimetable(selectedTimetable.id);
+        setSelectedTimetable(updated);
+      } else {
+        setEditError(res);
+      }
+    } catch (err: any) {
+      setEditError({ message: err.message || 'Ripple shift failed' });
     }
   };
 
@@ -275,12 +304,12 @@ export const TimetableGridPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Edit / Reassign Modal */}
+      {/* Edit / Reassign & Ripple Shift Modal */}
       {editModalOpen && selectedEntry && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
             <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <ArrowRightLeft className="w-5 h-5 text-indigo-600" /> Manual Reassign Session
+              <ArrowRightLeft className="w-5 h-5 text-indigo-600" /> Reassign & Ripple Shift Override
             </h3>
 
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1">
@@ -288,22 +317,45 @@ export const TimetableGridPage: React.FC = () => {
               <p className="text-slate-600 font-medium">Section: <span className="text-slate-900 font-bold">{selectedEntry.section_name}</span> | Faculty: <span className="text-slate-900 font-bold">{selectedEntry.faculty_name}</span></p>
             </div>
 
+            {/* Validation Error Banner */}
             {editError && (
-              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs space-y-1">
-                <p className="font-bold flex items-center gap-1"><ShieldAlert className="w-4 h-4 text-rose-600" /> Validation Failed</p>
-                <p>{editError.message}</p>
+              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs space-y-2">
+                <p className="font-bold flex items-center gap-1 text-rose-700"><ShieldAlert className="w-4 h-4" /> Direct Assignment Conflict Detected</p>
                 {editError.conflicts?.map((c: any, i: number) => (
-                  <p key={i} className="text-[11px] text-rose-700">• {c.message}</p>
+                  <p key={i} className="text-[11px] font-semibold text-rose-800">• {c.message}</p>
+                ))}
+              </div>
+            )}
+
+            {/* AI Ripple Shift Proposal Banner */}
+            {rippleProposal && rippleProposal.conflict_detected && (
+              <div className="p-4 rounded-xl bg-indigo-50 border border-indigo-200 text-xs space-y-2">
+                <div className="flex items-center gap-2 font-bold text-indigo-900">
+                  <Sparkles className="w-4 h-4 text-indigo-600" /> AI Ripple Shift Recommendation Available
+                </div>
+                {rippleProposal.conflicting_session && (
+                  <p className="text-slate-700 font-medium">
+                    Target slot currently occupied by <span className="font-bold text-slate-900">{rippleProposal.conflicting_session.course_code}</span>.
+                  </p>
+                )}
+                {rippleProposal.recommended_shifts?.map((s: any, idx: number) => (
+                  <p key={idx} className="text-[11px] font-bold text-indigo-700 bg-white p-2 rounded-lg border border-indigo-200">
+                    ↳ Recommend moving <span className="text-purple-700">{s.course_code}</span> to Day {days[s.to.day_index]} Period P{s.to.period_index + 1}
+                  </p>
                 ))}
               </div>
             )}
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-700 mb-1 font-bold">Day</label>
+                <label className="block text-slate-700 mb-1 font-bold">Target Day</label>
                 <select
                   value={editDay}
-                  onChange={(e) => setEditDay(Number(e.target.value))}
+                  onChange={(e) => {
+                    const d = Number(e.target.value);
+                    setEditDay(d);
+                    checkSlotValidity(d, editPeriod, editRoomId);
+                  }}
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-slate-800 font-semibold"
                 >
                   {days.map((d, i) => (
@@ -313,10 +365,14 @@ export const TimetableGridPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-slate-700 mb-1 font-bold">Period</label>
+                <label className="block text-slate-700 mb-1 font-bold">Target Period</label>
                 <select
                   value={editPeriod}
-                  onChange={(e) => setEditPeriod(Number(e.target.value))}
+                  onChange={(e) => {
+                    const p = Number(e.target.value);
+                    setEditPeriod(p);
+                    checkSlotValidity(editDay, p, editRoomId);
+                  }}
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-slate-800 font-semibold"
                 >
                   {periods.filter(p => !p.isBreak).map(p => (
@@ -326,10 +382,14 @@ export const TimetableGridPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-slate-700 mb-1 font-bold">Room</label>
+                <label className="block text-slate-700 mb-1 font-bold">Target Room</label>
                 <select
                   value={editRoomId}
-                  onChange={(e) => setEditRoomId(e.target.value)}
+                  onChange={(e) => {
+                    const r = e.target.value;
+                    setEditRoomId(r);
+                    checkSlotValidity(editDay, editPeriod, r);
+                  }}
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-slate-800 font-semibold"
                 >
                   {rooms.map(r => (
@@ -339,18 +399,28 @@ export const TimetableGridPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-2">
+            <div className="flex flex-wrap justify-end gap-2 pt-2">
               <button
                 onClick={() => setEditModalOpen(false)}
                 className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold"
               >
                 Cancel
               </button>
+
+              {rippleProposal?.can_override && rippleProposal?.recommended_shifts?.length > 0 && (
+                <button
+                  onClick={handleApplyRippleShift}
+                  className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5"
+                >
+                  <Sparkles className="w-4 h-4" /> Apply AI Ripple Shift
+                </button>
+              )}
+
               <button
                 onClick={handleApplyManualEdit}
                 className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-md"
               >
-                Validate & Save Edit
+                Direct Move
               </button>
             </div>
           </div>

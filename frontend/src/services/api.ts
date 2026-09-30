@@ -105,7 +105,26 @@ export const api = {
     return res.json();
   },
 
+  proposeOverride: async (id: string, entry_id: string, new_day_index: number, new_period_index: number, new_room_id: string) => {
+    const res = await fetch(`${API_BASE}/timetables/${id}/propose-override`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ entry_id, new_day_index, new_period_index, new_room_id })
+    });
+    return res.json();
+  },
+
+  applyOverride: async (id: string, entry_id: string, new_day_index: number, new_period_index: number, new_room_id: string) => {
+    const res = await fetch(`${API_BASE}/timetables/${id}/apply-override`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ entry_id, new_day_index, new_period_index, new_room_id })
+    });
+    return res.json();
+  },
+
   repairTimetable: async (id: string, params: { broken_faculty_id?: string; broken_room_id?: string; broken_day?: number; broken_period?: number }) => {
+
     const res = await fetch(`${API_BASE}/timetables/${id}/repair`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

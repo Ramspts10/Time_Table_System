@@ -337,7 +337,88 @@ class TimetableService:
             "conflicts": [e.__dict__ for e in repair_res.validation.errors]
         }
 
+    def propose_override(self, timetable_id: str, entry_id: str, target_day: int, target_period: int, target_room_id: str) -> Dict[str, Any]:
+        tt = self.db.query(Timetable).filter(Timetable.id == timetable_id).first()
+        if not tt:
+            raise ValueError("Timetable not found")
+
+        entry = self.db.query(TimetableEntry).filter(TimetableEntry.id == entry_id).first()
+        if not entry:
+            raise ValueError("Timetable entry not found")
+
+        problem_data = self._build_problem_data(tt.institution_id)
+        current_assignments = [
+            {
+                "session_id": e.session_id,
+                "course_id": e.course_id,
+                "course_code": e.course.course_code if e.course else "",
+                "course_name": e.course.course_name if e.course else "",
+                "section_id": e.section_id,
+                "faculty_id": e.faculty_id,
+                "room_id": e.room_id,
+                "day_index": e.day_index,
+                "period_index": e.period_index,
+                "duration": e.duration,
+                "is_locked": e.is_locked
+            }
+            for e in tt.entries
+        ]
+
+        prop = self.repair_engine.propose_ripple_shift(
+            problem_data,
+            current_assignments,
+            target_session_id=entry.session_id,
+            target_day=target_day,
+            target_period=target_period,
+            target_room_id=target_room_id
+        )
+
+        return {
+            "can_override": prop.can_override,
+            "conflict_detected": prop.conflict_detected,
+            "conflicting_session": prop.conflicting_session,
+            "recommended_shifts": prop.recommended_shifts,
+            "validation_errors": [e.__dict__ for e in prop.validation.errors]
+        }
+
+    def apply_override(self, timetable_id: str, entry_id: str, target_day: int, target_period: int, target_room_id: str) -> Dict[str, Any]:
+        prop = self.propose_override(timetable_id, entry_id, target_day, target_period, target_room_id)
+        if not prop["can_override"]:
+            return {
+                "success": False,
+                "message": "Cannot apply override. Ripple shift could not resolve all conflicts.",
+                "details": prop
+            }
+
+        tt = self.db.query(Timetable).filter(Timetable.id == timetable_id).first()
+        entry = self.db.query(TimetableEntry).filter(TimetableEntry.id == entry_id).first()
+
+        # Apply target move
+        entry.day_index = target_day
+        entry.period_index = target_period
+        entry.room_id = target_room_id
+
+        # Apply recommended ripple shifts
+        for shift in prop["recommended_shifts"]:
+            s_entry = self.db.query(TimetableEntry).filter(
+                TimetableEntry.timetable_id == tt.id,
+                TimetableEntry.session_id == shift["session_id"]
+            ).first()
+            if s_entry:
+                s_entry.day_index = shift["to"]["day_index"]
+                s_entry.period_index = shift["to"]["period_index"]
+                s_entry.room_id = shift["to"]["room_id"]
+
+        self.db.commit()
+
+        return {
+            "success": True,
+            "message": f"Override applied successfully with {len(prop['recommended_shifts'])} ripple shifts.",
+            "applied_shifts": prop["recommended_shifts"]
+        }
+
     def run_what_if_simulation(self, timetable_id: str, scenario_data: Dict[str, Any]) -> Dict[str, Any]:
+
         tt = self.db.query(Timetable).filter(Timetable.id == timetable_id).first()
         if not tt:
             raise ValueError("Timetable not found")

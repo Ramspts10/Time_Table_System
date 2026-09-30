@@ -125,7 +125,32 @@ def manual_edit_entry(timetable_id: str, req: ManualEditEntryRequest, db: Sessio
     )
 
 
+@router.post("/{timetable_id}/propose-override")
+def propose_override(timetable_id: str, req: ManualEditEntryRequest, db: Session = Depends(get_db)):
+    svc = TimetableService(db)
+    return svc.propose_override(
+        timetable_id=timetable_id,
+        entry_id=req.entry_id,
+        target_day=req.new_day_index,
+        target_period=req.new_period_index,
+        target_room_id=req.new_room_id
+    )
+
+
+@router.post("/{timetable_id}/apply-override")
+def apply_override(timetable_id: str, req: ManualEditEntryRequest, db: Session = Depends(get_db)):
+    svc = TimetableService(db)
+    return svc.apply_override(
+        timetable_id=timetable_id,
+        entry_id=req.entry_id,
+        target_day=req.new_day_index,
+        target_period=req.new_period_index,
+        target_room_id=req.new_room_id
+    )
+
+
 @router.post("/{timetable_id}/repair")
+
 def repair_timetable(timetable_id: str, req: RepairRequest, db: Session = Depends(get_db)):
     svc = TimetableService(db)
     return svc.repair_timetable(
