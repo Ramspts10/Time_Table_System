@@ -117,5 +117,5 @@ smart-timetable/
 ├── database/           # SQLite / PostgreSQL Seed Data & Migrations
 ├── docker/             # Dockerfiles & Nginx Configurations
 ├── docker-compose.yml  # Container Orchestration Specification
-└── README.md           # Project Documentation
+└── README.md           # Project Documentation.
 ```
